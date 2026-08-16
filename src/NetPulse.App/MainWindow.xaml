@@ -1,12 +1,451 @@
-﻿<Window x:Class="NetPulse.App.MainWindow"
+<Window x:Class="NetPulse.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:NetPulse.App"
+        xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="NetPulse — Windows Network Monitor"
+        Width="1180"
+        Height="760"
+        MinWidth="980"
+        MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource InkBrush}"
+        Opacity="0">
+    <Window.Resources>
+        <Storyboard x:Key="RevealWindow">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="0"
+                             To="1"
+                             Duration="0:0:0.28" />
+        </Storyboard>
 
+        <Style x:Key="SummaryValue" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Bahnschrift SemiCondensed" />
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+
+        <Style x:Key="DetailLabel"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource EyebrowText}">
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style x:Key="TargetItemStyle" TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="ItemChrome"
+                                Padding="14"
+                                Background="#10191E"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemChrome" Property="Background" Value="#16242A" />
+                                <Setter TargetName="ItemChrome" Property="BorderBrush" Value="#38505A" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemChrome" Property="Background" Value="#152A25" />
+                                <Setter TargetName="ItemChrome" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource RevealWindow}" />
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Grid>
+        <Grid Background="{StaticResource GridTexture}" Opacity="0.55" />
+
+        <Grid Margin="28,22,28,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="44"
+                            Height="44"
+                            Margin="0,0,13,0"
+                            Background="{StaticResource AccentBrush}"
+                            CornerRadius="5">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontFamily="Bahnschrift SemiCondensed"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#07130F"
+                                   Text="NP" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontFamily="Bahnschrift SemiCondensed"
+                                   FontSize="25"
+                                   FontWeight="SemiBold"
+                                   Text="NETPULSE" />
+                        <TextBlock Margin="1,-2,0,0"
+                                   FontSize="12"
+                                   Foreground="{StaticResource MutedTextBrush}"
+                                   Text="Local network signal monitor" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Margin="0,0,10,0"
+                            Padding="11,8"
+                            Background="{StaticResource AccentDarkBrush}"
+                            BorderBrush="#2A7055"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            automation:AutomationProperties.Name="Monitoring status">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="7"
+                                     Height="7"
+                                     Margin="0,0,8,0"
+                                     Fill="{StaticResource AccentBrush}" />
+                            <TextBlock Style="{StaticResource EyebrowText}"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       Text="{Binding MonitoringStatus}" />
+                        </StackPanel>
+                    </Border>
+                    <Button Margin="0,0,10,0"
+                            Command="{Binding ToggleMonitoringCommand}"
+                            Content="{Binding ToggleMonitoringLabel}"
+                            Style="{StaticResource QuietButton}"
+                            automation:AutomationProperties.Name="Pause or resume monitoring" />
+                    <Button Command="{Binding RunAllNowCommand}"
+                            Content="RUN ALL NOW"
+                            Style="{StaticResource AccentButton}"
+                            automation:AutomationProperties.Name="Run all target checks now" />
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="1"
+                    Margin="0,0,0,12"
+                    Padding="12,9"
+                    Background="#3A2F17"
+                    BorderBrush="#8F6E22"
+                    BorderThickness="1"
+                    CornerRadius="5"
+                    Visibility="{Binding Warning, Converter={StaticResource StringVisibility}}">
+                <TextBlock Foreground="#FFD77B"
+                           Text="{Binding Warning}"
+                           TextWrapping="Wrap" />
+            </Border>
+
+            <Border Grid.Row="2"
+                    Margin="0,0,0,18"
+                    Background="#0D161A"
+                    BorderBrush="{StaticResource LineBrush}"
+                    BorderThickness="1"
+                    CornerRadius="7">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="1" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="1" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="1" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Margin="18,13">
+                        <TextBlock Style="{StaticResource EyebrowText}" Text="TOTAL TARGETS" />
+                        <TextBlock Style="{StaticResource SummaryValue}" Text="{Binding TotalTargets}" />
+                    </StackPanel>
+                    <Border Grid.Column="1" Background="{StaticResource LineBrush}" />
+                    <StackPanel Grid.Column="2" Margin="18,13">
+                        <TextBlock Style="{StaticResource EyebrowText}" Text="HEALTHY" />
+                        <TextBlock Style="{StaticResource SummaryValue}"
+                                   Foreground="{StaticResource AccentBrush}"
+                                   Text="{Binding HealthyTargets}" />
+                    </StackPanel>
+                    <Border Grid.Column="3" Background="{StaticResource LineBrush}" />
+                    <StackPanel Grid.Column="4" Margin="18,13">
+                        <TextBlock Style="{StaticResource EyebrowText}" Text="NEEDS ATTENTION" />
+                        <TextBlock Style="{StaticResource SummaryValue}"
+                                   Foreground="#FFC857"
+                                   Text="{Binding AttentionTargets}" />
+                    </StackPanel>
+                    <Border Grid.Column="5" Background="{StaticResource LineBrush}" />
+                    <StackPanel Grid.Column="6" Margin="18,13">
+                        <TextBlock Style="{StaticResource EyebrowText}" Text="CURRENT AVERAGE" />
+                        <TextBlock Style="{StaticResource SummaryValue}" Text="{Binding AverageLatency}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="2*" MinWidth="340" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        Padding="17"
+                        Background="{StaticResource PanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="7">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource EyebrowText}" Text="TARGET RAIL" />
+                                <TextBlock Margin="0,3,0,0"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           Text="Live endpoints" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Bottom"
+                                       Foreground="{StaticResource MutedTextBrush}"
+                                       Text="Select a row for diagnostics" />
+                        </Grid>
+
+                        <ListBox Grid.Row="1"
+                                 ItemsSource="{Binding Targets}"
+                                 SelectedItem="{Binding SelectedTarget, Mode=TwoWay}"
+                                 ItemContainerStyle="{StaticResource TargetItemStyle}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 automation:AutomationProperties.Name="Monitoring targets">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid automation:AutomationProperties.Name="{Binding Name}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="42" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Width="32"
+                                                Height="32"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Background="#0C1418"
+                                                BorderBrush="{Binding State, Converter={StaticResource HealthBrush}}"
+                                                BorderThickness="1"
+                                                CornerRadius="16">
+                                            <TextBlock HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="14"
+                                                       FontWeight="Bold"
+                                                       Foreground="{Binding State, Converter={StaticResource HealthBrush}}"
+                                                       Text="{Binding State, Converter={StaticResource HealthGlyph}}" />
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock FontSize="15"
+                                                           FontWeight="SemiBold"
+                                                           Text="{Binding Name}" />
+                                                <Border Margin="9,0,0,0"
+                                                        Padding="6,2"
+                                                        Background="#1C2B31"
+                                                        CornerRadius="3">
+                                                    <TextBlock Style="{StaticResource EyebrowText}"
+                                                               FontSize="9"
+                                                               Text="{Binding TypeLabel}" />
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Margin="0,4,0,0"
+                                                       MaxWidth="470"
+                                                       Foreground="{StaticResource MutedTextBrush}"
+                                                       Text="{Binding EndpointCaption}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2"
+                                                    Margin="14,0,0,0"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       FontFamily="Bahnschrift SemiCondensed"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{Binding State, Converter={StaticResource HealthBrush}}"
+                                                       Text="{Binding StateLabel}" />
+                                            <TextBlock Margin="0,4,0,0"
+                                                       HorizontalAlignment="Right"
+                                                       FontFamily="Bahnschrift SemiCondensed"
+                                                       FontSize="15"
+                                                       Text="{Binding CurrentLatency}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2"
+                        Padding="19"
+                        Background="{StaticResource PanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="7">
+                    <Grid DataContext="{Binding SelectedTarget}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource EyebrowText}" Text="FOCUS CHANNEL" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontFamily="Bahnschrift SemiCondensed"
+                                       FontSize="24"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding Name}" />
+                            <TextBlock Margin="0,3,0,0"
+                                       Foreground="{StaticResource MutedTextBrush}"
+                                       Text="{Binding EndpointCaption}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1"
+                                Margin="0,17,0,17"
+                                Padding="13,11"
+                                Background="#0C1519"
+                                BorderBrush="{Binding State, Converter={StaticResource HealthBrush}}"
+                                BorderThickness="1"
+                                CornerRadius="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Width="24"
+                                           Height="24"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="17"
+                                           FontWeight="Bold"
+                                           Foreground="{Binding State, Converter={StaticResource HealthBrush}}"
+                                           Text="{Binding State, Converter={StaticResource HealthGlyph}}" />
+                                <StackPanel Grid.Column="1" Margin="8,0,8,0">
+                                    <TextBlock FontFamily="Bahnschrift SemiCondensed"
+                                               FontWeight="SemiBold"
+                                               Foreground="{Binding State, Converter={StaticResource HealthBrush}}"
+                                               Text="{Binding StateLabel}" />
+                                    <TextBlock Margin="0,2,0,0"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               Text="{Binding StatusMessage}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Bahnschrift SemiCondensed"
+                                           FontSize="22"
+                                           Text="{Binding CurrentLatency}" />
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="2" Margin="0,0,0,17">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBlock Style="{StaticResource DetailLabel}" Text="LAST SAMPLE" />
+                                <TextBlock Text="{Binding LastChecked}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Style="{StaticResource DetailLabel}" Text="SAMPLES STORED" />
+                                <TextBlock Text="{Binding SampleCount}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Grid.Row="3"
+                                Padding="14"
+                                Background="#0D161A"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="1"
+                                CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource DetailLabel}" Text="SIGNAL NOTES" />
+                                <TextBlock Margin="0,0,0,13"
+                                           Foreground="{StaticResource MutedTextBrush}"
+                                           Text="HTTP service latency or explicit resolver response time. Failed samples are retained without inventing a latency value."
+                                           TextWrapping="Wrap" />
+                                <TextBlock Style="{StaticResource DetailLabel}" Text="ICMP REACHABILITY" />
+                                <TextBlock Text="{Binding IcmpStatus}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Grid Grid.Row="4" Margin="0,17,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource EyebrowText}"
+                                       Text="{Binding EnabledLabel}" />
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource MutedTextBrush}"
+                                       Text="{Binding TypeLabel}" />
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="4"
+                    Margin="0,12,0,0"
+                    Padding="11,8"
+                    Background="#3B1D1D"
+                    BorderBrush="#7F3D3D"
+                    BorderThickness="1"
+                    CornerRadius="5"
+                    Visibility="{Binding ErrorMessage, Converter={StaticResource StringVisibility}}">
+                <TextBlock Foreground="#FF9A9A"
+                           Text="{Binding ErrorMessage}"
+                           TextWrapping="Wrap" />
+            </Border>
+        </Grid>
     </Grid>
 </Window>
