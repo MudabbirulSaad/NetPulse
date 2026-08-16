@@ -1,5 +1,6 @@
 using NetPulse.Core.Session;
 using NetPulse.Infrastructure.Monitoring;
+using NetPulse.Infrastructure.Logging;
 using NetPulse.Infrastructure.Storage;
 
 namespace NetPulse.Infrastructure.Session;
@@ -8,6 +9,8 @@ public static class NetPulseSessionFactory
 {
     public static INetPulseSession CreateDefault()
     {
+        var paths = LocalStatePaths.CreateDefault();
+        var logger = NetPulseLogging.Create(paths);
         var handler = new SocketsHttpHandler
         {
             AllowAutoRedirect = true,
@@ -20,8 +23,12 @@ public static class NetPulseSessionFactory
             new HttpProbe(httpClient, ownsClient: true),
             new DnsProbe(new DnsClientLookup(), new IcmpProbe()),
         };
-        var store = new JsonLocalStateStore(LocalStatePaths.CreateDefault());
+        var store = new JsonLocalStateStore(paths);
 
-        return new NetPulseSession(probes, store);
+        return new NetPulseSession(
+            probes,
+            store,
+            logger: logger,
+            ownsLogger: true);
     }
 }

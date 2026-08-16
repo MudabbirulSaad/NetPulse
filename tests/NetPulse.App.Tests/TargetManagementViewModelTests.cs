@@ -83,6 +83,24 @@ public sealed class TargetManagementViewModelTests
         Assert.Equal("Target", Assert.Single(session.TestDrafts).Name);
     }
 
+    [Fact]
+    public async Task SelectedTestUsesSafeUserFacingError()
+    {
+        var session = new ManagementSession([Snapshot("Target")])
+        {
+            RunOnceException = new IOException("secret-path-or-host"),
+        };
+        var viewModel = new DashboardViewModel(session);
+        await viewModel.InitializeAsync();
+
+        await viewModel.TestSelectedCommand.ExecuteAsync(null);
+
+        Assert.Equal(
+            "NetPulse could not complete the action. Technical details were written to the local log.",
+            viewModel.ErrorMessage);
+        Assert.DoesNotContain("secret-path-or-host", viewModel.ErrorMessage, StringComparison.Ordinal);
+    }
+
     private static TargetDraft Draft(string name) =>
         new(name, TargetType.Http, "https://example.com/", null, 10, 5);
 
@@ -130,6 +148,8 @@ public sealed class TargetManagementViewModelTests
 
         public List<TargetDraft> TestDrafts { get; } = [];
 
+        public Exception? RunOnceException { get; init; }
+
         public event EventHandler<NetPulseState>? StateChanged;
 
         public Task InitializeAsync(CancellationToken cancellationToken = default)
@@ -154,6 +174,11 @@ public sealed class TargetManagementViewModelTests
             CancellationToken cancellationToken = default)
         {
             TestDrafts.Add(target);
+            if (RunOnceException is not null)
+            {
+                return Task.FromException<CheckResult>(RunOnceException);
+            }
+
             return Task.FromResult(new CheckResult(
                 Guid.NewGuid(),
                 DateTimeOffset.UnixEpoch,

@@ -256,9 +256,9 @@ public sealed class DashboardViewModel : ObservableObject
         {
             await operation();
         }
-        catch (Exception exception)
+        catch (Exception)
         {
-            ErrorMessage = $"NetPulse could not complete the action: {exception.Message}";
+            ErrorMessage = "NetPulse could not complete the action. Technical details were written to the local log.";
         }
         finally
         {

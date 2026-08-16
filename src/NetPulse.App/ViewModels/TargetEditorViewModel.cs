@@ -235,9 +235,9 @@ public sealed class TargetEditorViewModel : ObservableObject
             TestStatus = $"{LastTestResult.State.ToString().ToUpperInvariant()} · {LastTestResult.Message}";
             return LastTestResult;
         }
-        catch (Exception exception)
+        catch (Exception)
         {
-            GeneralError = $"Connection test failed: {exception.Message}";
+            GeneralError = "Connection test failed. Technical details were written to the local log.";
             TestState = HealthState.Error;
             TestStatus = "The connection test could not be completed.";
             return null;

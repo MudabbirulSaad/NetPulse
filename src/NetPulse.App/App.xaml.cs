@@ -1,4 +1,5 @@
 using System.Windows;
+using System.ComponentModel;
 using NetPulse.App.ViewModels;
 using NetPulse.App.Services;
 using NetPulse.Core.Session;
@@ -9,6 +10,8 @@ namespace NetPulse.App;
 public partial class App : Application
 {
     private INetPulseSession? _session;
+    private bool _closeApproved;
+    private bool _closeInProgress;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -25,8 +28,39 @@ public partial class App : Application
         };
 
         MainWindow = window;
+        window.Closing += OnMainWindowClosing;
         window.Show();
         await viewModel.InitializeAsync();
+    }
+
+    private async void OnMainWindowClosing(object? sender, CancelEventArgs e)
+    {
+        if (_closeApproved || sender is not Window window)
+        {
+            return;
+        }
+
+        e.Cancel = true;
+        if (_closeInProgress)
+        {
+            return;
+        }
+
+        _closeInProgress = true;
+
+        try
+        {
+            if (_session is not null)
+            {
+                await _session.DisposeAsync();
+            }
+        }
+        finally
+        {
+            _session = null;
+            _closeApproved = true;
+            window.Close();
+        }
     }
 
     protected override void OnExit(ExitEventArgs e)

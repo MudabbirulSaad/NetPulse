@@ -130,6 +130,20 @@ public sealed class DnsProbeTests
     }
 
     [Fact]
+    public async Task LookupFailureCancelsOutstandingIcmpWork()
+    {
+        var lookup = new StubDnsLookup(
+            new SocketException((int)SocketError.HostUnreachable));
+        var icmp = new CancellableIcmpProbe();
+        var probe = new DnsProbe(lookup, icmp);
+
+        var result = await probe.CheckAsync(Target(), CancellationToken.None);
+
+        Assert.Equal(HealthState.Offline, result.State);
+        await icmp.Cancelled.Task.WaitAsync(TimeSpan.FromSeconds(1));
+    }
+
+    [Fact]
     public void LookupOptionsDisableCacheAndRetries()
     {
         var options = DnsClientLookup.CreateOptions(
@@ -206,6 +220,30 @@ public sealed class DnsProbeTests
         {
             CallCount++;
             return Task.FromResult(result);
+        }
+    }
+
+    private sealed class CancellableIcmpProbe : IIcmpProbe
+    {
+        public TaskCompletionSource Cancelled { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public async Task<IcmpResult> CheckAsync(
+            string address,
+            TimeSpan timeout,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                Cancelled.TrySetResult();
+                throw;
+            }
+
+            return new IcmpResult(false, false, null, "Not completed");
         }
     }
 }

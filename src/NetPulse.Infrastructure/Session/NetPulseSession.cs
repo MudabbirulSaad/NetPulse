@@ -4,6 +4,7 @@ using NetPulse.Core.Session;
 using NetPulse.Core.Validation;
 using NetPulse.Infrastructure.Monitoring;
 using NetPulse.Infrastructure.Storage;
+using Serilog;
 
 namespace NetPulse.Infrastructure.Session;
 
@@ -13,6 +14,8 @@ internal sealed class NetPulseSession : INetPulseSession
     private readonly Dictionary<TargetType, IProbe> _probes;
     private readonly ILocalStateStore _stateStore;
     private readonly TimeProvider _timeProvider;
+    private readonly ILogger _logger;
+    private readonly bool _ownsLogger;
     private readonly object _stateGate = new();
     private readonly SemaphoreSlim _lifecycleGate = new(1, 1);
     private CancellationTokenSource? _runCancellation;
@@ -25,7 +28,9 @@ internal sealed class NetPulseSession : INetPulseSession
     public NetPulseSession(
         IEnumerable<IProbe> probes,
         ILocalStateStore stateStore,
-        TimeProvider? timeProvider = null)
+        TimeProvider? timeProvider = null,
+        ILogger? logger = null,
+        bool ownsLogger = false)
     {
         ArgumentNullException.ThrowIfNull(probes);
         ArgumentNullException.ThrowIfNull(stateStore);
@@ -33,6 +38,8 @@ internal sealed class NetPulseSession : INetPulseSession
         _probes = probes.ToDictionary(static probe => probe.TargetType);
         _stateStore = stateStore;
         _timeProvider = timeProvider ?? TimeProvider.System;
+        _logger = logger ?? Serilog.Log.Logger;
+        _ownsLogger = ownsLogger;
 
         if (!_probes.ContainsKey(TargetType.Http) || !_probes.ContainsKey(TargetType.Dns))
         {
@@ -92,6 +99,9 @@ internal sealed class NetPulseSession : INetPulseSession
             }
 
             PublishState();
+            _logger.Information(
+                "Monitoring started. EnabledTargetCount={EnabledTargetCount}",
+                runtimes.Length);
         }
         finally
         {
@@ -132,6 +142,7 @@ internal sealed class NetPulseSession : INetPulseSession
             _runCancellation = null;
             _isRunning = false;
             PublishState();
+            _logger.Information("Monitoring stopped cleanly");
         }
         finally
         {
@@ -228,8 +239,26 @@ internal sealed class NetPulseSession : INetPulseSession
                     break;
             }
 
-            await SaveStateAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await SaveStateAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+            {
+                _logger.Error(
+                    "Target configuration persistence failed. ChangeType={ChangeType} ExceptionType={ExceptionType}",
+                    change.GetType().Name,
+                    exception.GetType().FullName);
+                throw new InvalidOperationException(
+                    "Target changes could not be saved.",
+                    exception);
+            }
+
             PublishState();
+            _logger.Information(
+                "Target configuration changed. ChangeType={ChangeType} TargetId={TargetId}",
+                change.GetType().Name,
+                GetChangedTargetId(change));
         }
         finally
         {
@@ -281,6 +310,11 @@ internal sealed class NetPulseSession : INetPulseSession
                 break;
         }
 
+        if (_ownsLogger && _logger is IDisposable disposableLogger)
+        {
+            disposableLogger.Dispose();
+        }
+
         _isDisposed = true;
         GC.SuppressFinalize(this);
     }
@@ -319,6 +353,15 @@ internal sealed class NetPulseSession : INetPulseSession
         }
 
         PublishState();
+        _logger.Information(
+            "Session initialized. TargetCount={TargetCount} SeededDefaults={SeededDefaults}",
+            _targets.Count,
+            stored.ShouldSeedDefaults);
+
+        if (stored.Warning is not null)
+        {
+            _logger.Warning("Local state recovery was required. RecoveryCode=JsonRecovery");
+        }
     }
 
     private async Task AddAsync(TargetDraft draft, CancellationToken cancellationToken)
@@ -466,8 +509,13 @@ internal sealed class NetPulseSession : INetPulseSession
 
                 throw;
             }
-            catch (Exception)
+            catch (Exception exception)
             {
+                _logger.Error(
+                    "Probe adapter failed. TargetId={TargetId} TargetType={TargetType} ExceptionType={ExceptionType}",
+                    runtime.Target.Id,
+                    runtime.Target.Type,
+                    exception.GetType().FullName);
                 result = new CheckResult(
                     runtime.Target.Id,
                     _timeProvider.GetUtcNow(),
@@ -482,9 +530,23 @@ internal sealed class NetPulseSession : INetPulseSession
             if (persistResult)
             {
                 runtime.History = HistoryPolicy.Append(runtime.History, result);
-                await SaveStateAsync(cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await SaveStateAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+                {
+                    _warning = "The latest result could not be saved. Monitoring will continue; see the local log for details.";
+                    _logger.Error(
+                        "Result persistence failed. TargetId={TargetId} ExceptionType={ExceptionType}",
+                        runtime.Target.Id,
+                        exception.GetType().FullName);
+                }
+
                 PublishState();
             }
+
+            LogResult(runtime.Target, result);
 
             return result;
         }
@@ -588,6 +650,36 @@ internal sealed class NetPulseSession : INetPulseSession
             draft.TimeoutSeconds,
             draft.IsEnabled,
             _timeProvider.GetUtcNow());
+
+    private void LogResult(MonitorTarget target, CheckResult result)
+    {
+        if (result.State == HealthState.Healthy)
+        {
+            _logger.Debug(
+                "Target check completed. TargetId={TargetId} TargetType={TargetType} State={State} DurationMs={DurationMs}",
+                target.Id,
+                target.Type,
+                result.State,
+                result.Duration.TotalMilliseconds);
+            return;
+        }
+
+        _logger.Warning(
+            "Target check completed with attention state. TargetId={TargetId} TargetType={TargetType} State={State} ErrorCode={ErrorCode} DurationMs={DurationMs}",
+            target.Id,
+            target.Type,
+            result.State,
+            result.ErrorCode,
+            result.Duration.TotalMilliseconds);
+    }
+
+    private static Guid? GetChangedTargetId(TargetChange change) => change switch
+    {
+        TargetChange.Update update => update.TargetId,
+        TargetChange.SetEnabled setEnabled => setEnabled.TargetId,
+        TargetChange.Delete delete => delete.TargetId,
+        _ => null,
+    };
 
     private MonitorTarget[] CreateDefaultTargets()
     {

@@ -50,6 +50,7 @@ internal sealed class DnsProbe(
             timeout,
             linkedSource.Token,
             cancellationToken);
+        var icmpObserved = false;
 
         try
         {
@@ -60,6 +61,7 @@ internal sealed class DnsProbe(
                 linkedSource.Token).ConfigureAwait(false);
             var duration = _timeProvider.GetElapsedTime(startedTimestamp);
             var icmp = await icmpTask.ConfigureAwait(false);
+            icmpObserved = true;
 
             if (lookup.HasResolverError)
             {
@@ -150,6 +152,20 @@ internal sealed class DnsProbe(
                 ProbeErrorCode.UnexpectedFailure,
                 Array.Empty<string>(),
                 NotAttemptedIcmp());
+        }
+        finally
+        {
+            if (!icmpObserved)
+            {
+                await linkedSource.CancelAsync().ConfigureAwait(false);
+                try
+                {
+                    await icmpTask.ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+            }
         }
     }
 
