@@ -20,6 +20,11 @@ NetPulse is under active development. The first release targets Windows x64 and 
 
 The repository separates the WPF application, core monitoring module, infrastructure adapters, tests, and installer authoring. The UI interacts through a single `INetPulseSession` interface so networking and persistence remain independently testable.
 
+- [Project plan](docs/project-plan.md)
+- [Architecture](docs/architecture/architecture.md)
+- [Backlog](docs/backlog.md)
+- [Evidence checklist](docs/evidence/evidence-checklist.md)
+
 ## Build prerequisites
 
 - Windows 10/11 x64
