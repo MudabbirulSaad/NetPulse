@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="SampleApp"
+    Manufacturer="Mudabbirul Saad"
+    Version="1.0.0"
+    UpgradeCode="E94F37B5-544A-4DD1-976F-8F260DAFB38E"
+    Language="1033"
+    Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of SampleApp is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="SampleApp">
+        <Component Id="SampleAppFiles" Guid="2676926C-D418-419A-BC01-58CB2D63C4D1" Bitness="always64">
+          <File Id="SampleAppExe" Source="$(var.SampleApp.TargetDir)SampleApp.exe" KeyPath="yes">
+            <Shortcut
+              Id="SampleAppStartMenuShortcut"
+              Directory="ProgramMenuFolder"
+              Name="SampleApp"
+              WorkingDirectory="INSTALLFOLDER"
+              Advertise="yes" />
+          </File>
+          <File Id="SampleAppDll" Source="$(var.SampleApp.TargetDir)SampleApp.dll" />
+          <File Id="SampleAppDeps" Source="$(var.SampleApp.TargetDir)SampleApp.deps.json" />
+          <File Id="SampleAppRuntimeConfig" Source="$(var.SampleApp.TargetDir)SampleApp.runtimeconfig.json" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <Feature Id="MainFeature" Title="SampleApp" Level="1">
+      <ComponentRef Id="SampleAppFiles" />
+    </Feature>
+  </Package>
+</Wix>

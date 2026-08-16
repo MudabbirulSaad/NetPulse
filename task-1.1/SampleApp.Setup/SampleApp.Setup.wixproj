@@ -1,0 +1,12 @@
+<Project Sdk="WixToolset.Sdk/4.0.6">
+  <PropertyGroup>
+    <OutputName>SampleAppSetup</OutputName>
+    <OutputType>Package</OutputType>
+    <Platform>x64</Platform>
+    <InstallerPlatform>x64</InstallerPlatform>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SampleApp\SampleApp.csproj" />
+    <PackageReference Include="WixToolset.UI.wixext" />
+  </ItemGroup>
+</Project>
