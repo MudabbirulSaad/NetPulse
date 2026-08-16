@@ -1,0 +1,38 @@
+<Project Sdk="WixToolset.Sdk/4.0.6">
+  <PropertyGroup>
+    <OutputName>NetPulseSetup</OutputName>
+    <OutputType>Package</OutputType>
+    <Platform>x64</Platform>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
+    <NetPulseBuildDir>$(RepoRoot)artifacts\installer-build\</NetPulseBuildDir>
+    <NetPulsePublishDir>$(RepoRoot)artifacts\publish\NetPulse\</NetPulsePublishDir>
+    <DefineConstants>PublishDir=$(NetPulsePublishDir);ProductVersion=$(VersionPrefix)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" />
+  </ItemGroup>
+
+  <Target Name="PublishNetPulse" BeforeTargets="BeforeBuild">
+    <MSBuild
+      Projects="$(RepoRoot)src\NetPulse.App\NetPulse.App.csproj"
+      Targets="Publish"
+      Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=false;PublishSingleFile=false;BaseOutputPath=$(NetPulseBuildDir);PublishDir=$(NetPulsePublishDir)" />
+    <ItemGroup>
+      <RequiredPublishFile Include="$(NetPulsePublishDir)NetPulse.App.exe" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)NetPulse.App.dll" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)NetPulse.App.deps.json" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)NetPulse.App.runtimeconfig.json" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)NetPulse.Core.dll" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)NetPulse.Infrastructure.dll" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)CommunityToolkit.Mvvm.dll" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)DnsClient.dll" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)Serilog.dll" />
+      <RequiredPublishFile Include="$(NetPulsePublishDir)Serilog.Sinks.File.dll" />
+    </ItemGroup>
+    <Error
+      Condition="!Exists('%(RequiredPublishFile.Identity)')"
+      Text="Required framework-dependent publish file is missing: %(RequiredPublishFile.Identity)" />
+  </Target>
+</Project>

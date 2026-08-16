@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="NetPulse"
+    Manufacturer="Mudabbirul Saad"
+    Version="$(var.ProductVersion)"
+    UpgradeCode="3E03781C-78F4-497C-BC86-F9E3FF497334"
+    Language="1033"
+    Scope="perMachine"
+    InstallerVersion="500">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of NetPulse is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="NetPulse">
+        <Component Id="NetPulseAppExe" Guid="98252132-2853-4C45-93A8-3A036E8393F5" Bitness="always64">
+          <File Id="NetPulseAppExeFile" Source="$(var.PublishDir)NetPulse.App.exe" KeyPath="yes">
+            <Shortcut
+              Id="NetPulseStartMenuShortcut"
+              Directory="NetPulseProgramMenuFolder"
+              Name="NetPulse"
+              Description="Windows endpoint monitoring dashboard"
+              WorkingDirectory="INSTALLFOLDER"
+              Advertise="yes" />
+          </File>
+          <RemoveFolder Id="RemoveNetPulseProgramMenuFolder" Directory="NetPulseProgramMenuFolder" On="uninstall" />
+        </Component>
+        <Component Id="NetPulseAppDll" Guid="560AD5F6-7703-479A-8414-0B07F6D7F217" Bitness="always64">
+          <File Id="NetPulseAppDllFile" Source="$(var.PublishDir)NetPulse.App.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="NetPulseAppDeps" Guid="02014A96-9CD8-424F-A803-05858A427EE9" Bitness="always64">
+          <File Id="NetPulseAppDepsFile" Source="$(var.PublishDir)NetPulse.App.deps.json" KeyPath="yes" />
+        </Component>
+        <Component Id="NetPulseAppRuntimeConfig" Guid="44697B8A-04EB-4A30-A3C8-8B051179C708" Bitness="always64">
+          <File Id="NetPulseAppRuntimeConfigFile" Source="$(var.PublishDir)NetPulse.App.runtimeconfig.json" KeyPath="yes" />
+        </Component>
+        <Component Id="NetPulseCoreDll" Guid="6175D27A-0C1E-4FE3-9A77-B60E785247B3" Bitness="always64">
+          <File Id="NetPulseCoreDllFile" Source="$(var.PublishDir)NetPulse.Core.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="NetPulseInfrastructureDll" Guid="B625D76C-3782-42DF-AF69-C206BEC1BD06" Bitness="always64">
+          <File Id="NetPulseInfrastructureDllFile" Source="$(var.PublishDir)NetPulse.Infrastructure.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="CommunityToolkitMvvmDll" Guid="7ACDCE2C-23FC-4B5D-8A46-8B5904ED6BB8" Bitness="always64">
+          <File Id="CommunityToolkitMvvmDllFile" Source="$(var.PublishDir)CommunityToolkit.Mvvm.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="DnsClientDll" Guid="537128E3-AD50-45B8-AA07-8F3FFD11FD49" Bitness="always64">
+          <File Id="DnsClientDllFile" Source="$(var.PublishDir)DnsClient.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="SerilogDll" Guid="3EDD44F8-2622-436C-8C66-8A708D45A9F1" Bitness="always64">
+          <File Id="SerilogDllFile" Source="$(var.PublishDir)Serilog.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="SerilogSinksFileDll" Guid="9B9C9DAF-DF50-427C-810E-13745A8F9C9B" Bitness="always64">
+          <File Id="SerilogSinksFileDllFile" Source="$(var.PublishDir)Serilog.Sinks.File.dll" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="NetPulseProgramMenuFolder" Name="NetPulse" />
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="NetPulse" Level="1">
+      <ComponentRef Id="NetPulseAppExe" />
+      <ComponentRef Id="NetPulseAppDll" />
+      <ComponentRef Id="NetPulseAppDeps" />
+      <ComponentRef Id="NetPulseAppRuntimeConfig" />
+      <ComponentRef Id="NetPulseCoreDll" />
+      <ComponentRef Id="NetPulseInfrastructureDll" />
+      <ComponentRef Id="CommunityToolkitMvvmDll" />
+      <ComponentRef Id="DnsClientDll" />
+      <ComponentRef Id="SerilogDll" />
+      <ComponentRef Id="SerilogSinksFileDll" />
+    </Feature>
+  </Package>
+</Wix>
