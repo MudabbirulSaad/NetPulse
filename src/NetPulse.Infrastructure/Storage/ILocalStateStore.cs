@@ -11,7 +11,9 @@ internal interface ILocalStateStore
 
 internal sealed record StoredLocalState(
     IReadOnlyList<MonitorTarget> Targets,
-    IReadOnlyDictionary<Guid, IReadOnlyList<CheckResult>> History)
+    IReadOnlyDictionary<Guid, IReadOnlyList<CheckResult>> History,
+    string? Warning = null,
+    bool ShouldSeedDefaults = false)
 {
     public static StoredLocalState Empty { get; } = new(
         Array.Empty<MonitorTarget>(),

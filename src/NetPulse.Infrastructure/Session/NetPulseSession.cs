@@ -20,6 +20,7 @@ internal sealed class NetPulseSession : INetPulseSession
     private bool _isInitialized;
     private bool _isRunning;
     private bool _isDisposed;
+    private string? _warning;
 
     public NetPulseSession(
         IEnumerable<IProbe> probes,
@@ -256,6 +257,30 @@ internal sealed class NetPulseSession : INetPulseSession
         }
 
         _lifecycleGate.Dispose();
+
+        foreach (var probe in _probes.Values.Distinct())
+        {
+            switch (probe)
+            {
+                case IAsyncDisposable asyncDisposable:
+                    await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+                    break;
+                case IDisposable disposable:
+                    disposable.Dispose();
+                    break;
+            }
+        }
+
+        switch (_stateStore)
+        {
+            case IAsyncDisposable asyncDisposable:
+                await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+                break;
+            case IDisposable disposable:
+                disposable.Dispose();
+                break;
+        }
+
         _isDisposed = true;
         GC.SuppressFinalize(this);
     }
@@ -268,11 +293,15 @@ internal sealed class NetPulseSession : INetPulseSession
         }
 
         var stored = await _stateStore.LoadAsync(cancellationToken).ConfigureAwait(false)
-            ?? StoredLocalState.Empty;
+            ?? StoredLocalState.Empty with { ShouldSeedDefaults = true };
 
         lock (_stateGate)
         {
-            foreach (var target in stored.Targets)
+            var targets = stored.ShouldSeedDefaults
+                ? CreateDefaultTargets()
+                : stored.Targets;
+
+            foreach (var target in targets)
             {
                 stored.History.TryGetValue(target.Id, out var history);
                 _targets[target.Id] = new TargetRuntime(
@@ -281,7 +310,14 @@ internal sealed class NetPulseSession : INetPulseSession
             }
         }
 
+        _warning = stored.Warning;
         _isInitialized = true;
+
+        if (stored.ShouldSeedDefaults)
+        {
+            await SaveStateAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         PublishState();
     }
 
@@ -553,6 +589,23 @@ internal sealed class NetPulseSession : INetPulseSession
             draft.IsEnabled,
             _timeProvider.GetUtcNow());
 
+    private MonitorTarget[] CreateDefaultTargets()
+    {
+        var createdAtUtc = _timeProvider.GetUtcNow();
+        return TargetDefaults.Create()
+            .Select((draft, index) => new MonitorTarget(
+                Guid.NewGuid(),
+                draft.Name,
+                draft.Type,
+                draft.Address,
+                draft.DnsResolver,
+                draft.PollIntervalSeconds,
+                draft.TimeoutSeconds,
+                draft.IsEnabled,
+                createdAtUtc.AddTicks(index)))
+            .ToArray();
+    }
+
     private static void EnsureValid(TargetValidationResult result)
     {
         if (!result.IsValid)
@@ -577,7 +630,8 @@ internal sealed class NetPulseSession : INetPulseSession
                         runtime.State,
                         runtime.History.Count == 0 ? null : runtime.History[^1],
                         runtime.History.ToArray()))
-                    .ToArray());
+                    .ToArray(),
+                _warning);
             Volatile.Write(ref _currentState, state);
         }
 
