@@ -1,9 +1,12 @@
 using NetPulse.Core.Models;
+using NetPulse.Core.Metrics;
 
 namespace NetPulse.App.ViewModels;
 
 public sealed class TargetRowViewModel(TargetSnapshot snapshot)
 {
+    private readonly LatencyStatistics _statistics = MetricCalculator.Calculate(snapshot.History);
+
     public TargetSnapshot Snapshot { get; } = snapshot;
 
     public Guid Id => Snapshot.Target.Id;
@@ -46,6 +49,15 @@ public sealed class TargetRowViewModel(TargetSnapshot snapshot)
 
     public int SampleCount => Snapshot.History.Count;
 
+    public string MinimumLatency => FormatLatency(_statistics.Minimum);
+
+    public string AverageLatency => FormatLatency(_statistics.Average);
+
+    public string MaximumLatency => FormatLatency(_statistics.Maximum);
+
+    public IReadOnlyList<double?> GraphPoints =>
+        MetricCalculator.CreateGraphPoints(Snapshot.History);
+
     public TargetDraft ToDraft() =>
         new(
             Snapshot.Target.Name,
@@ -55,4 +67,8 @@ public sealed class TargetRowViewModel(TargetSnapshot snapshot)
             Snapshot.Target.PollIntervalSeconds,
             Snapshot.Target.TimeoutSeconds,
             Snapshot.Target.IsEnabled);
+
+    private static string FormatLatency(TimeSpan? value) => value.HasValue
+        ? $"{value.Value.TotalMilliseconds:0} ms"
+        : "—";
 }

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+        xmlns:controls="clr-namespace:NetPulse.App.Controls"
         mc:Ignorable="d"
         Title="NetPulse — Windows Network Monitor"
         Width="1180"
@@ -413,15 +414,69 @@
                                 BorderBrush="{StaticResource LineBrush}"
                                 BorderThickness="1"
                                 CornerRadius="5">
-                            <StackPanel>
-                                <TextBlock Style="{StaticResource DetailLabel}" Text="SIGNAL NOTES" />
-                                <TextBlock Margin="0,0,0,13"
-                                           Foreground="{StaticResource MutedTextBrush}"
-                                           Text="HTTP service latency or explicit resolver response time. Failed samples are retained without inventing a latency value."
-                                           TextWrapping="Wrap" />
-                                <TextBlock Style="{StaticResource DetailLabel}" Text="ICMP REACHABILITY" />
-                                <TextBlock Text="{Binding IcmpStatus}" TextWrapping="Wrap" />
-                            </StackPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource DetailLabel}" Text="ROLLING LATENCY · LAST 30" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               Text="Gaps mark failed checks" />
+                                </Grid>
+                                <controls:LatencySparkline Grid.Row="1"
+                                                           MinHeight="72"
+                                                           Margin="0,3,0,8"
+                                                           Points="{Binding GraphPoints}"
+                                                           Stroke="{StaticResource AccentBrush}"
+                                                           EmptyTextBrush="{StaticResource MutedTextBrush}"
+                                                           automation:AutomationProperties.Name="Rolling latency sparkline" />
+                                <Grid Grid.Row="2" Margin="0,0,0,11">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource DetailLabel}" Text="MIN" />
+                                        <TextBlock FontFamily="Bahnschrift SemiCondensed"
+                                                   FontSize="15"
+                                                   Text="{Binding MinimumLatency}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Style="{StaticResource DetailLabel}" Text="AVERAGE" />
+                                        <TextBlock FontFamily="Bahnschrift SemiCondensed"
+                                                   FontSize="15"
+                                                   Text="{Binding AverageLatency}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Style="{StaticResource DetailLabel}" Text="MAX" />
+                                        <TextBlock FontFamily="Bahnschrift SemiCondensed"
+                                                   FontSize="15"
+                                                   Text="{Binding MaximumLatency}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Row="3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="0,0,10,0"
+                                               Style="{StaticResource DetailLabel}"
+                                               Text="ICMP" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               Text="{Binding IcmpStatus}"
+                                               TextWrapping="Wrap" />
+                                </Grid>
+                            </Grid>
                         </Border>
 
                         <StackPanel Grid.Row="4" Margin="0,17,0,0">
