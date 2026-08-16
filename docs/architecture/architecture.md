@@ -26,6 +26,20 @@ Owns target/result types, validation, health classification, rolling metrics, th
 
 Provides HTTP, explicit DNS, ICMP, JSON persistence, and logging adapters. External failures are translated into core result types rather than escaping into the UI.
 
+## Dependency direction
+
+```text
+NetPulse.App ────────────────┐
+    │                        │
+    ├──> NetPulse.Core <─────┤
+    │                        │
+    └──> NetPulse.Infrastructure
+                 │
+                 └──> NetPulse.Core
+```
+
+`NetPulse.Core` has no reference to WPF, DnsClient, Serilog, or the file system. The app references infrastructure only in its composition root; views and view models operate through `INetPulseSession`. Probe and storage adapters remain behind internal seams.
+
 ## Data flow
 
 1. A view model submits a validated `TargetChange` or one-off test request.
@@ -41,3 +55,13 @@ Provides HTTP, explicit DNS, ICMP, JSON persistence, and logging adapters. Exter
 - Target failures are isolated from other loops.
 - Files use temporary-write plus replace semantics.
 - ICMP is informational and never overrides a successful DNS response.
+
+## State ownership
+
+`MonitoringSession` is the single writer for configured targets and history. Consumers receive immutable `NetPulseState` snapshots through `CurrentState` and `StateChanged`. Each target has one scheduling task and one lock shared with one-off checks. A target change cancels and replaces only the affected loop.
+
+The JSON store owns serialization and atomic replacement but does not decide monitoring behavior. The WPF dispatcher owns UI-thread projection but does not perform network or disk work.
+
+## Runtime composition
+
+At startup the WPF composition root creates one long-lived HTTP client, DNS and ICMP adapters, the JSON state store, the monitoring session, and the file logger. Application close cancels the session, waits for its loops, disposes the composition root, flushes logging, and explicitly exits the dispatcher.
