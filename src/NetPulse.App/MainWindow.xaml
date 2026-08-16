@@ -235,10 +235,17 @@
                                            FontWeight="SemiBold"
                                            Text="Live endpoints" />
                             </StackPanel>
-                            <TextBlock Grid.Column="1"
-                                       VerticalAlignment="Bottom"
-                                       Foreground="{StaticResource MutedTextBrush}"
-                                       Text="Select a row for diagnostics" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                                <TextBlock Margin="0,0,10,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource MutedTextBrush}"
+                                           Text="Select a row for diagnostics" />
+                                <Button Padding="11,6"
+                                        Command="{Binding AddTargetCommand}"
+                                        Content="+ ADD TARGET"
+                                        Style="{StaticResource AccentButton}"
+                                        automation:AutomationProperties.Name="Add monitoring target" />
+                            </StackPanel>
                         </Grid>
 
                         <ListBox Grid.Row="1"
@@ -417,19 +424,49 @@
                             </StackPanel>
                         </Border>
 
-                        <Grid Grid.Row="4" Margin="0,17,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock VerticalAlignment="Center"
-                                       Style="{StaticResource EyebrowText}"
-                                       Text="{Binding EnabledLabel}" />
-                            <TextBlock Grid.Column="1"
-                                       VerticalAlignment="Center"
-                                       Foreground="{StaticResource MutedTextBrush}"
-                                       Text="{Binding TypeLabel}" />
-                        </Grid>
+                        <StackPanel Grid.Row="4" Margin="0,17,0,0">
+                            <Grid Margin="0,0,0,9">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock VerticalAlignment="Center"
+                                           Style="{StaticResource EyebrowText}"
+                                           Text="{Binding EnabledLabel}" />
+                                <TextBlock Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource MutedTextBrush}"
+                                           Text="{Binding TypeLabel}" />
+                            </Grid>
+                            <WrapPanel>
+                                <Button Margin="0,0,7,7"
+                                        Padding="10,6"
+                                        Command="{Binding DataContext.TestSelectedCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Content="TEST"
+                                        Style="{StaticResource QuietButton}"
+                                        automation:AutomationProperties.Name="Test selected target" />
+                                <Button Margin="0,0,7,7"
+                                        Padding="10,6"
+                                        Command="{Binding DataContext.EditTargetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Content="EDIT"
+                                        Style="{StaticResource QuietButton}"
+                                        automation:AutomationProperties.Name="Edit selected target" />
+                                <Button Margin="0,0,7,7"
+                                        Padding="10,6"
+                                        Command="{Binding DataContext.ToggleTargetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Content="{Binding DataContext.ToggleTargetLabel, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Style="{StaticResource QuietButton}"
+                                        automation:AutomationProperties.Name="Enable or disable selected target" />
+                                <Button Margin="0,0,0,7"
+                                        Padding="10,6"
+                                        Background="#381D20"
+                                        BorderBrush="#713C43"
+                                        Command="{Binding DataContext.DeleteTargetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Content="DELETE"
+                                        Style="{StaticResource QuietButton}"
+                                        automation:AutomationProperties.Name="Delete selected target" />
+                            </WrapPanel>
+                        </StackPanel>
                     </Grid>
                 </Border>
             </Grid>

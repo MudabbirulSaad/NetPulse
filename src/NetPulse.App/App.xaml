@@ -7,6 +7,7 @@
         <converters:HealthStateBrushConverter x:Key="HealthBrush" />
         <converters:HealthStateGlyphConverter x:Key="HealthGlyph" />
         <converters:StringToVisibilityConverter x:Key="StringVisibility" />
+        <BooleanToVisibilityConverter x:Key="BooleanVisibility" />
 
         <SolidColorBrush x:Key="InkBrush" Color="#0A1014" />
         <SolidColorBrush x:Key="PanelBrush" Color="#111B20" />

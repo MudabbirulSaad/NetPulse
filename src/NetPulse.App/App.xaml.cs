@@ -1,5 +1,6 @@
 using System.Windows;
 using NetPulse.App.ViewModels;
+using NetPulse.App.Services;
 using NetPulse.Core.Session;
 using NetPulse.Infrastructure.Session;
 
@@ -16,7 +17,8 @@ public partial class App : Application
         _session = NetPulseSessionFactory.CreateDefault();
         var viewModel = new DashboardViewModel(
             _session,
-            SynchronizationContext.Current);
+            SynchronizationContext.Current,
+            new TargetDialogService(_session));
         var window = new MainWindow
         {
             DataContext = viewModel,
