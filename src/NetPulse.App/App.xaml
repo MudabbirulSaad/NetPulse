@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:NetPulse.App.Converters"
-             ShutdownMode="OnMainWindowClose">
+             ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <converters:HealthStateBrushConverter x:Key="HealthBrush" />
         <converters:HealthStateGlyphConverter x:Key="HealthGlyph" />

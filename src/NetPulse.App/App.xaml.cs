@@ -59,7 +59,9 @@ public partial class App : Application
         {
             _session = null;
             _closeApproved = true;
+            window.Closing -= OnMainWindowClosing;
             window.Close();
+            Shutdown(0);
         }
     }
 
