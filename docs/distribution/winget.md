@@ -52,4 +52,10 @@ Confirm Program Files and the shortcut are removed while `%LocalAppData%\NetPuls
 
 ## Community submission
 
-Copy the `manifests/m/MudabbirulSaad/NetPulse/1.0.0` directory into a branch based on `microsoft/winget-pkgs:master`. The pull request must contain only this one package version. Record the pull-request URL here after submission.
+The three-file manifest was submitted from branch `MudabbirulSaad:netpulse-1.0.0`:
+
+- Pull request: [microsoft/winget-pkgs#418335](https://github.com/microsoft/winget-pkgs/pull/418335)
+- Submission state: draft, awaiting the account holder’s Microsoft Contributor License Agreement and the clean-sandbox install gate
+- Pull-request scope: one package identifier, one version, three manifest files, and no unrelated changes
+
+Microsoft’s policy service requires the GitHub account holder to read and personally accept the Contributor License Agreement. That legal acceptance is not performed by project automation.
