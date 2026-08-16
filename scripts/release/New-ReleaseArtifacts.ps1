@@ -25,7 +25,7 @@ try {
     dotnet test NetPulse.sln -c Release --no-build --no-restore -p:Platform=x64 -p:BaseOutputPath=$releaseBuildDirectory
     if ($LASTEXITCODE -ne 0) { throw 'Release test suite failed.' }
 
-    dotnet build installer\NetPulse.Setup\NetPulse.Setup.wixproj -c Release --no-restore -p:Platform=x64 -p:VersionPrefix=$Version
+    dotnet build installer\NetPulse.Setup\NetPulse.Setup.wixproj -c Release -p:Platform=x64 -p:VersionPrefix=$Version
     if ($LASTEXITCODE -ne 0) { throw 'Release MSI build failed.' }
 
     & (Join-Path $repoRoot 'scripts\installer\Test-NetPulsePackage.ps1') -MsiPath $msiSource
