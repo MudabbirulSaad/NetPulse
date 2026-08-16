@@ -1,0 +1,85 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test-package:
+    name: Build, test, and package
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install pinned .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.400
+
+      - name: Restore dependencies
+        run: dotnet restore NetPulse.sln -p:Platform=x64
+
+      - name: Build Release solution
+        run: dotnet build NetPulse.sln -c Release --no-restore -p:Platform=x64
+
+      - name: Run deterministic tests
+        run: dotnet test NetPulse.sln -c Release --no-build --no-restore -p:Platform=x64 --logger "trx;LogFilePrefix=netpulse" --results-directory artifacts/TestResults
+
+      - name: Publish framework-dependent application
+        run: dotnet publish src/NetPulse.App/NetPulse.App.csproj -c Release -r win-x64 --self-contained false --no-build -p:Platform=x64 --output artifacts/publish/NetPulse
+
+      - name: Build WiX MSI
+        run: dotnet build installer/NetPulse.Setup/NetPulse.Setup.wixproj -c Release --no-restore -p:Platform=x64
+
+      - name: Inspect MSI structure
+        shell: pwsh
+        run: ./scripts/installer/Test-NetPulsePackage.ps1
+
+      - name: Generate MSI checksum
+        shell: pwsh
+        run: |
+          $msi = 'installer/NetPulse.Setup/bin/x64/Release/NetPulseSetup.msi'
+          $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $msi).Hash.ToLowerInvariant()
+          "$hash  NetPulseSetup.msi" | Set-Content -Encoding ascii artifacts/NetPulseSetup.sha256
+
+      - name: Upload published application
+        uses: actions/upload-artifact@v7
+        with:
+          name: NetPulse-win-x64
+          path: artifacts/publish/NetPulse/
+          if-no-files-found: error
+
+      - name: Upload MSI and checksum
+        uses: actions/upload-artifact@v7
+        with:
+          name: NetPulseSetup
+          path: |
+            installer/NetPulse.Setup/bin/x64/Release/NetPulseSetup.msi
+            artifacts/NetPulseSetup.sha256
+          if-no-files-found: error
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: artifacts/TestResults/
+          if-no-files-found: warn
