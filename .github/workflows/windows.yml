@@ -44,7 +44,7 @@ jobs:
         run: dotnet test NetPulse.sln -c Release --no-build --no-restore -p:Platform=x64 --logger "trx;LogFilePrefix=netpulse" --results-directory artifacts/TestResults
 
       - name: Publish framework-dependent application
-        run: dotnet publish src/NetPulse.App/NetPulse.App.csproj -c Release -r win-x64 --self-contained false --no-build -p:Platform=x64 --output artifacts/publish/NetPulse
+        run: dotnet publish src/NetPulse.App/NetPulse.App.csproj -c Release -r win-x64 --self-contained false --no-build --output artifacts/publish/NetPulse
 
       - name: Build WiX MSI
         run: dotnet build installer/NetPulse.Setup/NetPulse.Setup.wixproj -c Release --no-restore -p:Platform=x64
