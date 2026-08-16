@@ -9,7 +9,5 @@ public sealed record CheckResult(
     ProbeErrorCode? ErrorCode = null,
     ProbeDetails? Details = null)
 {
-    public bool HasLatency =>
-        State is HealthState.Healthy or HealthState.Degraded &&
-        ErrorCode is null;
+    public bool HasLatency => State is HealthState.Healthy or HealthState.Degraded;
 }
