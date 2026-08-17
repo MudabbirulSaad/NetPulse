@@ -1,0 +1,32 @@
+Task 1.3 clean Windows deployment result
+Date: 2026-08-17
+Environment: fresh GitHub-hosted windows-latest runner
+Workflow run: https://github.com/MudabbirulSaad/NetPulse/actions/runs/32019017246
+Commit: c2127beb296b74a3fa43d074b9d15312b5d9e76f
+
+Base install: PASS
+- NetPulse 1.0.0 installed silently.
+- All 10 package files were present under Program Files.
+- The Start menu shortcut was present.
+
+Restart and persistence: PASS
+- NetPulse launched and closed cleanly twice.
+- settings.json was retained without an unexpected change.
+- history.json remained present across the second launch.
+
+Major upgrade: PASS
+- The temporary 1.0.1 package used the same UpgradeCode.
+- Version 1.0.0 was replaced by 1.0.1.
+- Only the 1.0.1 product registration remained after the upgrade.
+
+Uninstall and retention: PASS
+- Program Files application content was removed.
+- The Start menu shortcut was removed.
+- settings.json and history.json remained in LocalAppData.
+
+Workflow artifact: clean-deployment-evidence
+Artifact contents:
+- deployment-summary.txt
+- install-1.0.0.log
+- upgrade-1.0.1.log
+- uninstall-1.0.1.log

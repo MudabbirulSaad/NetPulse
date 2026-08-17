@@ -49,9 +49,9 @@ The Windows workflow now performs the full deployment sequence on a fresh hosted
 6. uninstall 1.0.1; and
 7. confirm that installed files and the shortcut are removed while LocalAppData remains.
 
-The workflow uploads `deployment-summary.txt` and the three Windows Installer logs as the `clean-deployment-evidence` artifact. This section is complete when the first updated workflow run passes and its link is added to the evidence index.
+The complete sequence passed in [Windows workflow run 32019017246](https://github.com/MudabbirulSaad/NetPulse/actions/runs/32019017246). The run uploaded `deployment-summary.txt` and the three Windows Installer logs as the `clean-deployment-evidence` artifact.
 
-Evidence: [Task 1.3 deployment record](evidence/task-1/task-1.3/2026-08-16-deployment-and-restart.md)
+Evidence: [Task 1.3 deployment record](evidence/task-1/task-1.3/2026-08-16-deployment-and-restart.md) and [clean Windows result](evidence/task-1/task-1.3/2026-08-17-task1.3-clean-windows-run.txt)
 
 ## Task 1.4 — public distribution
 

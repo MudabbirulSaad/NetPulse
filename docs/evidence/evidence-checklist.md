@@ -30,7 +30,7 @@ Copy only sanitized product screenshots into `docs/evidence/task-1/screenshots`.
 
 ### Task 1.3 / Deployment checks
 
-- [ ] Passing clean Windows workflow run linked in the evidence index.
+- [x] Passing clean Windows workflow run linked in the evidence index.
 - [x] Runtime dependency inventory check for Program Files.
 - [x] Automated 1.0.0 to 1.0.1 replacement test implemented.
 - [x] Automated uninstall and `%LocalAppData%\NetPulse` retention checks implemented.

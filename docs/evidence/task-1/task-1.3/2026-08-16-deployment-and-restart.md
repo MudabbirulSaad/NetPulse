@@ -31,11 +31,12 @@ Scope: Clean environment validation for install, restart, upgrade, uninstall
   - [1.0.0 package result](2026-08-17-task1.3-package-validation.txt)
   - [1.0.0 and temporary 1.0.1 comparison](2026-08-17-task1.3-upgrade-package-validation.txt)
 
-## Evidence boundary
+## Clean Windows result
 
-- The local machine has usable Task 1.2 screenshots and restart records, but it is not a clean environment.
-- Windows Sandbox is not installed on this machine, so the public clean-environment record comes from the fresh `windows-latest` runner.
-- A workflow run must pass before this section is marked complete. The uploaded `deployment-summary.txt` is the primary clean-machine record; its MSI logs provide the detailed installer trace.
+- [Windows workflow run 32019017246](https://github.com/MudabbirulSaad/NetPulse/actions/runs/32019017246) completed successfully on a fresh `windows-latest` runner.
+- The `clean-deployment-evidence` artifact contains the install, upgrade, and uninstall MSI logs plus `deployment-summary.txt`.
+- The concise public record is [2026-08-17-task1.3-clean-windows-run.txt](2026-08-17-task1.3-clean-windows-run.txt).
+- The local machine screenshots remain the visible GUI evidence for Task 1.2. The fresh runner supplies the independent package and persistence result for Task 1.3.
 
 ## Manual capture order, if a separate VM is used
 
