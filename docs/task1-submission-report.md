@@ -57,15 +57,18 @@ Evidence: [Task 1.3 deployment record](evidence/task-1/task-1.3/2026-08-16-deplo
 
 Version 1.0.0 is available from the public GitHub release with an MSI and SHA-256 checksum. The WinGet manifests pass the automated package checks in pull request [microsoft/winget-pkgs#418335](https://github.com/microsoft/winget-pkgs/pull/418335).
 
-The pull request is open, not a draft, and mergeable. All automated validation gates are green. No author action is currently requested; the remaining step is the WinGet maintainer decision.
+The pull request is open, not a draft, and mergeable. All automated validation gates are green and the PR has the `Validation-Completed` label. GitHub still reports `REVIEW_REQUIRED` because no maintainer review has been recorded; no further author action is currently requested.
 
-Evidence: [Task 1.4 distribution record](evidence/task-1/task-1.4/2026-08-16-winget-and-release.md)
+The first policy pass routed the short description to manual review under `Policy-Test-2.7`. The validation result identified the networking wording as an adult-theme match. I changed only the short description, pushed the correction to the existing branch, and the repeated policy gate passed.
+
+Evidence: [Task 1.4 distribution record](evidence/task-1/task-1.4/2026-08-16-winget-and-release.md) and [policy correction record](evidence/task-1/task-1.4/2026-08-17-winget-policy-correction.txt)
 
 ## Troubleshooting notes
 
 - Both MSIs install per machine. A non-elevated silent install is blocked by Windows policy, so deployment commands must be run from an elevated PowerShell session.
 - Uninstall removes application files and shortcuts but intentionally leaves `%LocalAppData%\NetPulse` so a later reinstall can restore the user's targets and history.
 - Windows Sandbox is not installed on the development machine. The clean-environment package sequence therefore runs on a fresh GitHub-hosted Windows runner, with the local GUI captures kept as the visible application evidence.
+- An automated content classifier can misread technical wording. The WinGet policy result named the exact field, which made a narrow wording correction possible without changing the installer or application.
 
 See the [troubleshooting record](evidence/task-1/troubleshooting/2026-08-16-troubleshooting-log.md) for command outputs and resolutions.
 

@@ -18,12 +18,12 @@ This index maps each implementation area to durable public project evidence and 
 | Deployment | MSI authoring, dependency inventory, package-inspection script | Clean x64 install, installed file list, upgrade, uninstall retention |
 | CI | Windows workflow and Dependabot configuration | Passing GitHub workflow link |
 | Release | Release notes, MSI checksum, semantic tag | Public release page and downloaded checksum comparison |
-| WinGet | Versioned manifests and submission record | `winget validate`, Windows Sandbox install, pull-request link |
+| WinGet | Versioned manifests and submission record | `winget validate`, fresh hosted Windows installation test, pull-request link |
 
 Use the [evidence checklist](evidence-checklist.md) while collecting captures. Store local originals under the ignored `docs/evidence/local/` path or outside the repository.
 
 ## Current task index
 
-See the remaining-manual-gate tracker here:
+See the task evidence tracker here:
 
 - [Task 1 evidence index](task-1/evidence-index.md)

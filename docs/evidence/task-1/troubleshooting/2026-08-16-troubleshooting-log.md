@@ -58,3 +58,25 @@ Action taken
 Result
 
 - Non-admin CLI path is correctly documented as environment policy blocked; admin script path works and preserves `%LocalAppData%\NetPulse` data on uninstall.
+
+## 4) WinGet short description routed to manual policy review
+
+Symptom
+
+- Pull request 418335 received `Policy-Test-2.7`, and `05. Manifest Policy Validation` concluded as manual review while the other package checks passed.
+
+Cause and investigation
+
+- The downloaded WinGet validation artifact named `ShortDescription` as the triggering field and classified the networking wording as an adult-theme match.
+- The installer, URLs, manifest structure, malware scan, installation, and metadata checks did not report a fault.
+
+Action taken
+
+- Replaced the short description with `A compact Windows dashboard for monitoring HTTP endpoints and DNS resolvers.`
+- Applied the same one-line correction to the NetPulse source manifest and the existing `netpulse-1.0.0` pull-request branch.
+- Ran `winget validate` locally before pushing the change.
+
+Result
+
+- Local manifest validation succeeded and the repeated WinGet policy gate passed.
+- The pull request remains open for the external maintainer decision.

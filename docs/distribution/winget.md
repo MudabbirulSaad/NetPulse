@@ -55,7 +55,9 @@ Confirm Program Files and the shortcut are removed while `%LocalAppData%\NetPuls
 The three-file manifest was submitted from branch `MudabbirulSaad:netpulse-1.0.0`:
 
 - Pull request: [microsoft/winget-pkgs#418335](https://github.com/microsoft/winget-pkgs/pull/418335)
-- Submission state: draft, awaiting the account holder’s Microsoft Contributor License Agreement and the clean-sandbox install gate
+- Submission state: open, ready for review, mergeable, and awaiting the WinGet maintainer decision (`REVIEW_REQUIRED` with no reviews recorded)
+- Contributor License Agreement: passed
+- Automated validation: pull request, manifest, URL, policy, catalog, installer scan, installation, metadata, and completion gates passed
 - Pull-request scope: one package identifier, one version, three manifest files, and no unrelated changes
 
-Microsoft’s policy service requires the GitHub account holder to read and personally accept the Contributor License Agreement. That legal acceptance is not performed by project automation.
+The first policy pass routed `ShortDescription` to manual review under `Policy-Test-2.7`. The validation artifact identified the networking description as an adult-theme match. The description was rewritten without changing the package behaviour, committed to the existing branch, and the repeated policy gate passed. The PR then gained `Validation-Completed`; the historical policy label remains visible, but the current policy check is successful. The pull request is not described as merged until the repository records that event.

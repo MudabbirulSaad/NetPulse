@@ -1,0 +1,61 @@
+WinGet pull request policy correction
+Captured: 2026-08-17 21:59:03 AEST
+
+Repository: microsoft/winget-pkgs
+Pull request: 418335
+URL: https://github.com/microsoft/winget-pkgs/pull/418335
+Head commit: b6567238a303694081f356347c60f1541215df97
+
+Initial policy result
+---------------------
+OverallResult: ManualReview
+Test plan: Policy-Test-2.7
+Field: ShortDescription
+Reported message:
+A compact Windows dashboard for HTTP and explicit-resolver DNS health.
+triggered Adult Reference or Theme
+
+Correction
+----------
+ShortDescription was changed to:
+A compact Windows dashboard for monitoring HTTP endpoints and DNS resolvers.
+
+The same one-line change was applied to:
+- the NetPulse source manifest; and
+- the existing netpulse-1.0.0 branch in the contributor fork.
+
+Local result
+------------
+winget validate --manifest distribution\winget\manifests\m\MudabbirulSaad\NetPulse\1.0.0
+Manifest validation succeeded.
+
+Repeated GitHub validation
+--------------------------
+- license/cla: SUCCESS
+- 01. Pull Request Validation: SUCCESS
+- 02. Manifest Validation: SUCCESS
+- 03. URLs Validation: SUCCESS
+- 04. URL Domain Validation: SUCCESS
+- 05. Manifest Policy Validation: SUCCESS
+- 06. Catalog Content Verification: SUCCESS
+- 07. Installers Scan: SUCCESS
+- 08. Installation Validation: SUCCESS
+- 09. Installer Metadata Validation: SUCCESS
+- 10. Validation Completed: SUCCESS
+
+Current pull request state
+--------------------------
+State: OPEN
+Draft: false
+Mergeable: MERGEABLE
+Merge state: BLOCKED
+Review decision: REVIEW_REQUIRED
+Reviews recorded: 0
+Labels: Azure-Pipeline-Passed, Validation-Completed, Policy-Test-2.7, New-Package
+
+Interpretation
+--------------
+The wording correction cleared the policy validation gate. The remaining block is
+the repository's maintainer approval requirement; it is not an installer, manifest,
+URL, security, installation, metadata, or CLA failure. The pull request is not
+described as merged.

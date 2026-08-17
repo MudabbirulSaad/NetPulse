@@ -1,7 +1,7 @@
 # Task 1.4 Distribution Evidence (WinGet + GitHub Release)
 
 Date: 2026-08-16
-Scope: Distinction level distribution proof
+Scope: Task 1.4 public distribution proof
 
 ## Captured now
 
@@ -26,11 +26,15 @@ Scope: Distinction level distribution proof
   - Validation workflow checks `08`, `09`, and `10` are now complete and passed.
   - Merge state remains blocked because review is still required (`reviewDecision: REVIEW_REQUIRED`).
   - Reviewer status: no completed reviews yet, no explicit review requests, but assigned maintainer is present (`stephengillie`).
-  - Policy bot comment confirms validation guide path is available; all required checks are still green.
+  - The policy gate was neutral and requested manual review; the remaining automated checks passed.
 
-## Still required for final-grade submission
+## Status update - 2026-08-17
 
-- Open PR status transition to final accepted state.
-- Continue to monitor for maintainer review/merge on WinGet.
-- Capture at least one sandbox install-uninstall run using local manifests.
-- Include public link/ID of GitHub checks proving the full submission path is complete.
+- A fresh hosted Windows deployment run completed the install, two-launch restart, 1.0.0 to 1.0.1 replacement, uninstall, and LocalAppData retention sequence.
+- WinGet policy validation initially routed `ShortDescription` to manual review under `Policy-Test-2.7`.
+- The validation artifact identified the networking description as an adult-theme match. The sentence was rewritten and pushed to the existing pull-request branch.
+- The repeated policy gate passed, followed by the remaining package validation gates, and the PR gained `Validation-Completed`.
+- The historical `Policy-Test-2.7` label remains visible, but its current check result is successful.
+- The pull request remains open and mergeable with `REVIEW_REQUIRED` and no recorded reviews. Maintainer approval is the only remaining external event; the submission is not described as merged.
+
+Correction evidence: [2026-08-17-winget-policy-correction.txt](2026-08-17-winget-policy-correction.txt)

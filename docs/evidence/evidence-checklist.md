@@ -37,6 +37,7 @@ Copy only sanitized product screenshots into `docs/evidence/task-1/screenshots`.
 
 ### Task 1.4 / Distinction route
 
-- Release artifact checksums and runtime requirement.
-- Local `winget validate` output.
-- WinGet PR link and sandbox acceptance evidence.
+- [x] Release artifact checksums and runtime requirement.
+- [x] Local `winget validate` output.
+- [x] WinGet pull-request link and successful hosted validation suite.
+- [x] Policy-classifier correction and successful repeated policy gate.
