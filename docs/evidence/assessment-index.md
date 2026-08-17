@@ -21,3 +21,9 @@ This index maps each implementation area to durable public project evidence and 
 | WinGet | Versioned manifests and submission record | `winget validate`, Windows Sandbox install, pull-request link |
 
 Use the [evidence checklist](evidence-checklist.md) while collecting captures. Store local originals under the ignored `docs/evidence/local/` path or outside the repository.
+
+## Current task index
+
+See the remaining-manual-gate tracker here:
+
+- [Task 1 evidence index](task-1/evidence-index.md)

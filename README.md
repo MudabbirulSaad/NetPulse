@@ -95,5 +95,6 @@ Version 1.0 deliberately omits tray mode, alerts, TLS certificate monitoring, au
 - [Delivery plan](docs/project-plan.md)
 - [Definition of Done](docs/definition-of-done.md)
 - [Assessment evidence index](docs/evidence/assessment-index.md)
+- [Task 1 submission report](docs/task1-submission-report.md)
 - [WinGet distribution record](docs/distribution/winget.md)
 - [License](LICENSE) — MIT

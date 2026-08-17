@@ -1,0 +1,1 @@
+NetPulse MSI structure passed: version 1.0.0, 10 files, stable UpgradeCode {3E03781C-78F4-497C-BC86-F9E3FF497334}.

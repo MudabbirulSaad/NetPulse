@@ -1,0 +1,32 @@
+NetPulse restart and manual-check record
+Date: 2026-08-17 (AEST)
+
+Installed executable
+C:\Program Files\NetPulse\NetPulse.App.exe
+
+Manual check
+- Target: OpenReels
+- The dashboard changed from Healthy to Checking after Test was selected.
+- The completed result returned to Healthy with HTTP 200.
+- Completed at 20:02:14 +10:00 in the application log.
+- Recorded latency: 326.262 ms.
+
+Restart sequence
+- The application logged "Monitoring stopped cleanly" at 19:57:33 +10:00.
+- It was opened again from the installed Program Files folder.
+- The new process started at 19:59:29 +10:00.
+- The next session logged TargetCount=4 and SeededDefaults=false.
+- All four saved targets returned: OpenReels, Google DNS, Cloudflare DNS, and tplink.
+
+Persistence checks
+- Settings SHA-256 before restart:
+  12D74BB86A7AC7CB7D01BF4B43F4793AF371C45AF14959451F72F4EEBBFE8CE7
+- Settings SHA-256 after restart:
+  12D74BB86A7AC7CB7D01BF4B43F4793AF371C45AF14959451F72F4EEBBFE8CE7
+- The unchanged settings hash shows that the saved target configuration was retained.
+- history.json increased as new checks completed, showing that earlier history remained available and new results continued to append.
+
+Screenshots
+- ../screenshots/2026-08-17-task1.2-restart-restored-targets.png
+- ../screenshots/2026-08-17-task1.2-manual-check-running.png
+- ../screenshots/2026-08-17-task1.2-manual-check-complete.png

@@ -1,0 +1,17 @@
+Task 1.3 local package preparation
+Date: 2026-08-17
+
+Release package
+- Version: 1.0.0
+- Files: 10
+- UpgradeCode: {3E03781C-78F4-497C-BC86-F9E3FF497334}
+- SHA-256: 050C317C2E9FA791B15E74436E5E3A3530C3E4E74355F09DE46226DC4A752676
+
+Temporary upgrade package
+- Version: 1.0.1
+- Files: 10
+- UpgradeCode: {3E03781C-78F4-497C-BC86-F9E3FF497334}
+- SHA-256: 52B624C65A47DC9CA535588B30785519CBC24F2C0B0D38FD93A345DE72114069
+
+Both packages passed scripts/installer/Test-NetPulsePackage.ps1.
+The 1.0.1 MSI is generated only for the major-upgrade test and is not a release artifact.

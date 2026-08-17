@@ -1,0 +1,7 @@
+NetPulse CLI install/uninstall CLI run
+Timestamp: 2026-08-16T19:54:59
+MSI: installer\NetPulse.Setup\bin\x64\Release\NetPulseSetup.msi
+Install args: /i "installer\NetPulse.Setup\bin\x64\Release\NetPulseSetup.msi" /qn /norestart /l*v "artifacts/netpulse-install-cli-20260816-195459.log"
+Install exit code: 1625
+Uninstall args: /x "installer\NetPulse.Setup\bin\x64\Release\NetPulseSetup.msi" /qn /norestart /l*v "artifacts/netpulse-uninstall-cli-20260816-195459.log"
+Uninstall exit code: 1625

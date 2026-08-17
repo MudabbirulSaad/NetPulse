@@ -1,0 +1,31 @@
+GitHub PR status (live snapshot: 2026-08-16 19:42:00 AEST, via gh CLI)
+
+Repository: microsoft/winget-pkgs
+PR: 418335
+URL: https://github.com/microsoft/winget-pkgs/pull/418335
+
+State: OPEN
+Draft: false
+Review status: REVIEW_REQUIRED
+Mergeable: MERGEABLE
+Merge state: BLOCKED
+Labels: Azure-Pipeline-Passed, Policy-Test-2.7, New-Package, Validation-Guide
+Assignee: stephengillie
+
+Recent bot check outcomes:
+- license/cla: PASS
+- 01. Pull Request Validation: SUCCESS
+- 02. Manifest Validation: SUCCESS
+- 03. URLs Validation: SUCCESS
+- 04. URL Domain Validation: SUCCESS
+- 05. Manifest Policy Validation: NEUTRAL
+- 06. Catalog Content Verification: SUCCESS
+- 07. Installers Scan: SUCCESS
+- 08. Installation Validation: SUCCESS
+- 09. Installer Metadata Validation: SUCCESS
+- 10. Validation Completed: SUCCESS
+
+Notes:
+- No maintainer review rows are currently recorded in PR reviews.
+- Merge is still blocked only by `reviewDecision: REVIEW_REQUIRED`.
+- PR body checklist remains complete; only maintainer review remains for merge.

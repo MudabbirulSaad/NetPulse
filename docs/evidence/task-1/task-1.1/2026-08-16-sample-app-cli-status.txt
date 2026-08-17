@@ -1,0 +1,7 @@
+SampleApp CLI install/uninstall CLI run
+Timestamp: 2026-08-16T19:54:42
+MSI: task-1.1\SampleApp.Setup\bin\x64\Release\SampleAppSetup.msi
+Install args: /i "task-1.1\SampleApp.Setup\bin\x64\Release\SampleAppSetup.msi" /qn /norestart /l*v "artifacts/task-1.1/sample-install-cli-20260816-195442.log"
+Install exit code: 1603
+Uninstall args: /x "task-1.1\SampleApp.Setup\bin\x64\Release\SampleAppSetup.msi" /qn /norestart /l*v "artifacts/task-1.1/sample-uninstall-cli-20260816-195442.log"
+Uninstall exit code: 1605

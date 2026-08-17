@@ -1,0 +1,4 @@
+Manifest has the following dependencies that were not validated; ensure that they are valid:
+  - Packages
+      Microsoft.DotNet.DesktopRuntime.10 [>= 10.0.0]
+Manifest validation succeeded.

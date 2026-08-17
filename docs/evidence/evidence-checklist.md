@@ -1,25 +1,42 @@
 # Evidence Checklist
 
-Keep private assessment evidence in `docs/evidence/local/`, which is ignored by Git. Copy only sanitised product screenshots into the public screenshots directory.
+Keep private assessment evidence in `docs/evidence/local/`, which is ignored by Git.
+Copy only sanitized product screenshots into `docs/evidence/task-1/screenshots`.
 
-## Environment and sample installer
+## Evidence naming
 
-- Visual Studio version, desktop workload, WiX/HeatWave version
-- Sample solution in Release configuration
-- Sample build output, MSI, installed directory, running app, and uninstall result
+- Use `YYYY-MM-DD-shortdesc.md/.txt/.png` for every capture.
+- Keep assignment-stage captures grouped under:
+  - `docs/evidence/task-1/task-1.1`
+  - `docs/evidence/task-1/task-1.2`
+  - `docs/evidence/task-1/task-1.3`
+  - `docs/evidence/task-1/task-1.4`
+  - `docs/evidence/task-1/troubleshooting`
 
-## NetPulse implementation
+## Mandatory evidence by task
 
-- Solution structure and core tests
-- Live dashboard with all three defaults
-- Custom HTTP and DNS target workflows
-- Readable degraded, offline, and error states
-- Release build and dependency inventory
-- WiX source, MSI output, installed DLL directory, and running installed app
-- Restarted persistence and clean binary removal
+### Task 1.1
 
-## Distribution
+- Sample app build output in Release.
+- Task 1.1 MSI install, launch, and uninstall.
+- Success message shown to console.
 
-- Passing Windows workflow
-- Public release page, MSI, checksum, and notes
-- WinGet manifest output, sandbox result, and pull-request link
+### Task 1.2 / NetPulse milestone
+
+- [x] NetPulse MSI install on Windows 11 x64.
+- [x] Live dashboard with default targets and a manual check result.
+- [x] Clean application shutdown, restart, and persistence check.
+- [x] Scripted uninstall record with retained LocalAppData.
+
+### Task 1.3 / Deployment checks
+
+- [ ] Passing clean Windows workflow run linked in the evidence index.
+- [x] Runtime dependency inventory check for Program Files.
+- [x] Automated 1.0.0 to 1.0.1 replacement test implemented.
+- [x] Automated uninstall and `%LocalAppData%\NetPulse` retention checks implemented.
+
+### Task 1.4 / Distinction route
+
+- Release artifact checksums and runtime requirement.
+- Local `winget validate` output.
+- WinGet PR link and sandbox acceptance evidence.
