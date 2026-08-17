@@ -53,6 +53,28 @@ jobs:
         shell: pwsh
         run: ./scripts/installer/Test-NetPulsePackage.ps1
 
+      - name: Build temporary upgrade package
+        shell: pwsh
+        run: |
+          $upgradeRoot = Join-Path $PWD 'artifacts\upgrade-package'
+          dotnet build installer/NetPulse.Setup/NetPulse.Setup.wixproj `
+            -c Release `
+            -p:Platform=x64 `
+            -p:VersionPrefix=1.0.1 `
+            "-p:InstallerOutputPath=$upgradeRoot\out" `
+            "-p:InstallerIntermediateOutputPath=$upgradeRoot\obj" `
+            "-p:InstallerPublishDir=$upgradeRoot\publish"
+          ./scripts/installer/Test-NetPulsePackage.ps1 `
+            -MsiPath "$upgradeRoot\out\NetPulseSetup.msi" `
+            -ExpectedVersion 1.0.1
+
+      - name: Test clean install, restart, upgrade, and uninstall
+        shell: pwsh
+        run: |
+          ./scripts/installer/Test-NetPulseCleanDeployment.ps1 `
+            -BaseMsiPath 'installer\NetPulse.Setup\bin\x64\Release\NetPulseSetup.msi' `
+            -UpgradeMsiPath 'artifacts\upgrade-package\out\NetPulseSetup.msi'
+
       - name: Generate MSI checksum
         shell: pwsh
         run: |
@@ -82,4 +104,12 @@ jobs:
         with:
           name: test-results
           path: artifacts/TestResults/
+          if-no-files-found: warn
+
+      - name: Upload clean deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: clean-deployment-evidence
+          path: artifacts/clean-deployment/
           if-no-files-found: warn

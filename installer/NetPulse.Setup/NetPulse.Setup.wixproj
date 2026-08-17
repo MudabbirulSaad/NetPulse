@@ -4,9 +4,12 @@
     <OutputType>Package</OutputType>
     <Platform>x64</Platform>
     <InstallerPlatform>x64</InstallerPlatform>
+    <OutputPath Condition="'$(InstallerOutputPath)' != ''">$([MSBuild]::EnsureTrailingSlash('$(InstallerOutputPath)'))</OutputPath>
+    <IntermediateOutputPath Condition="'$(InstallerIntermediateOutputPath)' != ''">$([MSBuild]::EnsureTrailingSlash('$(InstallerIntermediateOutputPath)'))</IntermediateOutputPath>
     <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
     <NetPulseBuildDir>$(RepoRoot)artifacts\installer-build\</NetPulseBuildDir>
-    <NetPulsePublishDir>$(RepoRoot)artifacts\publish\NetPulse\</NetPulsePublishDir>
+    <NetPulsePublishDir Condition="'$(InstallerPublishDir)' == ''">$(RepoRoot)artifacts\publish\NetPulse\</NetPulsePublishDir>
+    <NetPulsePublishDir Condition="'$(InstallerPublishDir)' != ''">$([MSBuild]::EnsureTrailingSlash('$(InstallerPublishDir)'))</NetPulsePublishDir>
     <DefineConstants>PublishDir=$(NetPulsePublishDir);ProductVersion=$(VersionPrefix)</DefineConstants>
   </PropertyGroup>
 

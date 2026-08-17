@@ -1,7 +1,11 @@
 [CmdletBinding()]
 param(
     [Parameter()]
-    [string] $MsiPath = (Join-Path $PSScriptRoot '..\..\installer\NetPulse.Setup\bin\x64\Release\NetPulseSetup.msi')
+    [string] $MsiPath = (Join-Path $PSScriptRoot '..\..\installer\NetPulse.Setup\bin\x64\Release\NetPulseSetup.msi'),
+
+    [Parameter()]
+    [ValidatePattern('^\d+\.\d+\.\d+$')]
+    [string] $ExpectedVersion = '1.0.0'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -54,8 +58,8 @@ if ($missingFiles.Count -gt 0 -or $unexpectedFiles.Count -gt 0) {
 $version = @(Get-MsiValues -Query "SELECT `Value` FROM `Property` WHERE `Property` = 'ProductVersion'")[0]
 $upgradeCode = @(Get-MsiValues -Query "SELECT `Value` FROM `Property` WHERE `Property` = 'UpgradeCode'")[0]
 
-if ($version -ne '1.0.0') {
-    throw "Expected MSI version 1.0.0 but found $version."
+if ($version -ne $ExpectedVersion) {
+    throw "Expected MSI version $ExpectedVersion but found $version."
 }
 
 if ($upgradeCode -ne '{3E03781C-78F4-497C-BC86-F9E3FF497334}') {
